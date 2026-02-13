@@ -1,98 +1,79 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useRouter } from 'expo-router';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function DashboardScreen() {
+  const router = useRouter();
 
-export default function HomeScreen() {
+  const stats = [
+    { label: 'Tuestes Totales', value: '24', icon: 'cup.and.saucer.fill' as const, color: 'text-coffee-800' },
+    { label: 'Merma Promedio', value: '14.2%', icon: 'list.bullet' as const, color: 'text-red-500' },
+    { label: 'Último Origen', value: 'Colombia', icon: 'paperplane.fill' as const, color: 'text-coffee-600' },
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScrollView className="flex-1 bg-coffee-50 dark:bg-black p-6 pt-16">
+      <View className="flex-row justify-between items-center mb-8">
+        <View>
+          <Text className="text-coffee-900 dark:text-coffee-100 text-3xl font-bold">Hola, Carlos</Text>
+          <Text className="text-coffee-600 dark:text-coffee-400 text-lg">Tu resumen del día</Text>
+        </View>
+        <TouchableOpacity className="bg-coffee-900 p-3 rounded-full">
+          <IconSymbol name="house.fill" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View className="flex-row flex-wrap justify-between mb-8">
+        {stats.map((stat, index) => (
+          <View key={index} className="bg-white dark:bg-zinc-900 p-5 rounded-3xl w-[48%] mb-4 shadow-sm border border-coffee-100 dark:border-zinc-800">
+            <IconSymbol name={stat.icon} size={28} color="#846358" />
+            <Text className="text-coffee-400 dark:text-coffee-500 text-sm mt-3 font-medium">{stat.label}</Text>
+            <Text className={`text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</Text>
+          </View>
+        ))}
+
+        <TouchableOpacity
+          className="bg-coffee-800 p-5 rounded-3xl w-[48%] mb-4 shadow-sm items-center justify-center"
+          onPress={() => router.push('/add-roast')}
+        >
+          <IconSymbol name="cup.and.saucer.fill" size={32} color="#fff" />
+          <Text className="text-white font-bold mt-2">Nuevo Tueste</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View className="bg-coffee-900 p-6 rounded-3xl mb-8 overflow-hidden">
+        <View className="z-10">
+          <Text className="text-white text-xl font-bold mb-2">Consejo del Barista</Text>
+          <Text className="text-coffee-200 text-sm leading-relaxed">
+            Un tueste más lento durante la primera fase puede ayudar a desarrollar mejor los azúcares en procesos Honey.
+          </Text>
+        </View>
+        <View className="absolute -right-8 -bottom-8 opacity-20">
+          <IconSymbol name="cup.and.saucer.fill" size={120} color="#fff" />
+        </View>
+      </View>
+
+      <View className="mb-10">
+        <View className="flex-row justify-between items-end mb-4">
+          <Text className="text-coffee-900 dark:text-coffee-100 text-xl font-bold">Actividad Reciente</Text>
+          <TouchableOpacity onPress={() => router.push('/roasts')}>
+            <Text className="text-coffee-600 font-semibold">Ver todo</Text>
+          </TouchableOpacity>
+        </View>
+
+        {[1, 2].map((_, i) => (
+          <View key={i} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl mb-3 flex-row items-center border border-coffee-50 dark:border-zinc-800">
+            <View className="bg-coffee-100 dark:bg-coffee-900 p-3 rounded-xl mr-4">
+              <IconSymbol name="cup.and.saucer.fill" size={20} color="#846358" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-coffee-900 dark:text-coffee-100 font-bold">Etiopía - Yirgacheffe</Text>
+              <Text className="text-coffee-500 text-xs">Hace 2 horas • Lavado</Text>
+            </View>
+            <Text className="text-coffee-900 dark:text-coffee-100 font-bold">450g</Text>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
