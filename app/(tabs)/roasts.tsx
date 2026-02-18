@@ -3,7 +3,7 @@ import { FlashList } from '@shopify/flash-list';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Roast, RoastService } from '@/services/roast-service';
@@ -12,7 +12,6 @@ export default function RoastsScreen() {
   const [roasts, setRoasts] = useState<Roast[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
-  const { width } = useWindowDimensions();
 
   const fetchRoasts = useCallback(async () => {
     setRefreshing(true);
@@ -28,7 +27,7 @@ export default function RoastsScreen() {
   );
 
   const renderItem = ({ item }: { item: Roast }) => (
-    <View className="w-full md:w-1/2 lg:w-1/2 px-[1.5%] mb-5 overflow-hidden rounded-[32px] border border-white/5 bg-white/5">
+    <View className="px-4 mb-4 overflow-hidden rounded-[32px] border border-white/5 bg-white/5">
       <BlurView intensity={30} tint="dark">
         <TouchableOpacity
           className="p-6 flex-row justify-between items-center"
@@ -62,7 +61,6 @@ export default function RoastsScreen() {
 
   return (
     <View className="flex-1 bg-coffee-950 items-center">
-      {/* Background Decor */}
       <View className="absolute top-[100] right-[-50] w-[300] h-[300] bg-coffee-900 rounded-full blur-[100px] opacity-15" />
       <View className="absolute bottom-[200] left-[-30] w-[250] h-[250] bg-coffee-800 rounded-full blur-[80px] opacity-10" />
 
@@ -85,9 +83,7 @@ export default function RoastsScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           estimatedItemSize={140}
-          contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 0 }}
-          numColumns={width > 768 ? 2 : 1}
-          key={width > 768 ? 'web' : 'mobile'}
+          contentContainerStyle={{ paddingBottom: 150 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={fetchRoasts} tintColor="#a18072" />

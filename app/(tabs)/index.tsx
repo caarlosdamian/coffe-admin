@@ -32,9 +32,9 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row flex-wrap justify-between mb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4">
+          <View className="flex-row flex-wrap justify-between mb-8">
             {stats.map((stat, index) => (
-              <View key={index} className="w-[48%] md:w-auto mb-4 overflow-hidden rounded-[32px] border border-white/5 bg-white/5 shadow-2xl">
+              <View key={index} className="w-[48%] mb-4 overflow-hidden rounded-[32px] border border-white/5 bg-white/5 shadow-2xl">
                 <BlurView intensity={40} tint="dark" className="p-6">
                   <IconSymbol name={stat.icon} size={22} color="#a18072" />
                   <Text className="text-coffee-500 text-[10px] font-black mt-4 tracking-widest uppercase">{stat.label}</Text>
@@ -44,7 +44,7 @@ export default function DashboardScreen() {
             ))}
 
             <TouchableOpacity
-              className="w-[48%] md:w-auto mb-4 overflow-hidden rounded-[32px] bg-coffee-800 border border-white/10 shadow-lg"
+              className="w-[48%] mb-4 overflow-hidden rounded-[32px] bg-coffee-800 border border-white/10 shadow-lg"
               onPress={() => router.push('/add-roast')}
             >
               <View className="items-center justify-center p-6 py-8 h-full">
@@ -57,7 +57,7 @@ export default function DashboardScreen() {
           </View>
 
           {/* Highlight Card */}
-          <View className="mb-10 overflow-hidden rounded-[32px] border border-white/10 bg-white/5 lg:w-3/4 mx-auto">
+          <View className="mb-10 overflow-hidden rounded-[32px] border border-white/10 bg-white/5">
             <BlurView intensity={25} tint="dark" className="p-8">
               <View className="flex-row items-center mb-4">
                 <View className="bg-coffee-700/30 p-2.5 rounded-xl mr-3 border border-white/5">
@@ -71,7 +71,7 @@ export default function DashboardScreen() {
             </BlurView>
           </View>
 
-          <View className="mb-24 lg:w-3/4 mx-auto">
+          <View className="mb-24">
             <View className="flex-row justify-between items-end mb-6 px-2">
               <Text className="text-white text-xl font-bold uppercase tracking-widest text-[14px]">Actividad Reciente</Text>
               <TouchableOpacity onPress={() => router.push('/roasts')}>
@@ -79,7 +79,7 @@ export default function DashboardScreen() {
               </TouchableOpacity>
             </View>
 
-            <View className="md:grid md:grid-cols-2 lg:grid-cols-2 md:gap-4">
+            <View>
               {[1, 2].map((_, i) => (
                 <View key={i} className="mb-4 overflow-hidden rounded-[24px] border border-white/5 bg-white/5">
                   <BlurView intensity={20} tint="dark" className="p-5 flex-row items-center">

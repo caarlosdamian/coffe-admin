@@ -3,7 +3,7 @@ import { FlashList } from '@shopify/flash-list';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { InventoryItem, InventoryService } from '@/services/inventory-service';
@@ -12,7 +12,6 @@ export default function InventoryScreen() {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
-  const { width } = useWindowDimensions();
 
   const fetchInventory = useCallback(async () => {
     setRefreshing(true);
@@ -28,7 +27,7 @@ export default function InventoryScreen() {
   );
 
   const renderItem = ({ item }: { item: InventoryItem }) => (
-    <View className="w-full md:w-1/2 lg:w-1/2 px-[1.5%] mb-5 overflow-hidden rounded-[32px] border border-white/5 bg-white/5">
+    <View className="px-4 mb-5 overflow-hidden rounded-[32px] border border-white/5 bg-white/5">
       <BlurView intensity={30} tint="dark">
         <TouchableOpacity
           className="p-6"
@@ -69,7 +68,6 @@ export default function InventoryScreen() {
 
   return (
     <View className="flex-1 bg-coffee-950 items-center">
-      {/* Background Glows */}
       <View className="absolute top-[200] left-[-40] w-[250] h-[250] bg-coffee-900 rounded-full blur-[90px] opacity-15" />
       <View className="absolute bottom-[100] right-[-20] w-[220] h-[220] bg-coffee-800 rounded-full blur-[80px] opacity-10" />
 
@@ -92,9 +90,7 @@ export default function InventoryScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           estimatedItemSize={200}
-          contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 0 }}
-          numColumns={width > 768 ? 2 : 1}
-          key={width > 768 ? 'web' : 'mobile'}
+          contentContainerStyle={{ paddingBottom: 150 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={fetchInventory} tintColor="#a18072" />

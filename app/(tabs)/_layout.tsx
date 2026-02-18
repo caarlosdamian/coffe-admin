@@ -1,21 +1,14 @@
-import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, useWindowDimensions, View } from 'react-native';
+import { View } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { SideNavigation } from '@/components/side-navigation';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { BlurView } from 'expo-blur';
 
 export default function TabLayout() {
-  const { width } = useWindowDimensions();
-  const isWeb = Platform.OS === 'web';
-  const isDesktop = isWeb && width > 768;
-
   return (
     <View className="flex-1 flex-row bg-coffee-950">
-      <SideNavigation />
-
       <View className="flex-1">
         <Tabs
           screenOptions={{
@@ -36,7 +29,6 @@ export default function TabLayout() {
               bottom: 10,
               borderRadius: 40,
               marginHorizontal: 'auto',
-              display: isDesktop ? 'none' : 'flex',
             },
             tabBarBackground: () => (
               <BlurView intensity={40} tint="dark" style={{ flex: 1 }} />
@@ -65,9 +57,7 @@ export default function TabLayout() {
           />
           <Tabs.Screen
             name="explore"
-            options={{
-              href: null,
-            }}
+            options={{ href: null }}
           />
         </Tabs>
       </View>
