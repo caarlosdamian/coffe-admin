@@ -1,7 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Roast, RoastService } from '@/services/roast-service';
@@ -10,6 +12,7 @@ export default function RoastsScreen() {
   const [roasts, setRoasts] = useState<Roast[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const { width } = useWindowDimensions();
 
   const fetchRoasts = useCallback(async () => {
     setRefreshing(true);
@@ -25,63 +28,83 @@ export default function RoastsScreen() {
   );
 
   const renderItem = ({ item }: { item: Roast }) => (
-    <TouchableOpacity
-      className="bg-white dark:bg-zinc-900 mx-5 mb-4 p-5 rounded-3xl flex-row justify-between items-center shadow-sm border border-coffee-50 dark:border-zinc-800"
-      onPress={() => router.push({ pathname: '/add-roast', params: { id: item.id } })}
-    >
-      <View className="flex-1 pr-4">
-        <View className="flex-row items-center mb-1">
-          <Text className="text-coffee-900 dark:text-coffee-100 font-bold text-lg">{item.origin}</Text>
-          <View className="bg-coffee-100 dark:bg-coffee-900 px-2 py-0.5 rounded-full ml-2">
-            <Text className="text-coffee-700 dark:text-coffee-300 text-[10px] font-bold uppercase">{item.process}</Text>
+    <View className="w-full md:w-1/2 lg:w-1/2 px-[1.5%] mb-5 overflow-hidden rounded-[32px] border border-white/5 bg-white/5">
+      <BlurView intensity={30} tint="dark">
+        <TouchableOpacity
+          className="p-6 flex-row justify-between items-center"
+          onPress={() => router.push({ pathname: '/add-roast', params: { id: item.id } })}
+        >
+          <View className="flex-1 pr-4">
+            <View className="flex-row items-center mb-2">
+              <Text className="text-white font-black text-lg tracking-tight">{item.origin}</Text>
+              <View className="bg-white/10 px-3 py-1 rounded-full ml-3 border border-white/5">
+                <Text className="text-coffee-300 text-[9px] font-black uppercase tracking-widest">{item.process}</Text>
+              </View>
+            </View>
+            <Text className="text-coffee-500 text-sm font-bold mb-3">{item.variety} • {item.batch}</Text>
+            <Text className="text-coffee-600 text-[10px] font-black uppercase tracking-wider">
+              {new Date(item.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+            </Text>
           </View>
-        </View>
-        <Text className="text-coffee-500 text-sm mb-2">{item.variety} • {item.batch}</Text>
-        <Text className="text-coffee-400 text-xs italic">
-          {new Date(item.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
-        </Text>
-      </View>
 
-      <View className="items-end bg-coffee-50 dark:bg-zinc-800 p-3 rounded-2xl min-w-[80px]">
-        <Text className="text-red-500 font-bold text-lg">-{item.lossPercentage.toFixed(1)}%</Text>
-        <Text className="text-coffee-500 text-[10px] mt-1">{item.roastedWeight}g / {item.greenWeight}g</Text>
-      </View>
-    </TouchableOpacity>
+          <View className="items-end">
+            <View className="bg-red-950/20 p-3 rounded-2xl border border-red-900/20">
+              <Text className="text-red-400 font-black text-xl">-{item.lossPercentage.toFixed(1)}%</Text>
+            </View>
+            <Text className="text-coffee-500 text-[10px] mt-2 font-bold uppercase tracking-tighter">
+              {item.roastedWeight}g / {item.greenWeight}g
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </BlurView>
+    </View>
   );
 
   return (
-    <View className="flex-1 bg-coffee-50 dark:bg-black pt-16">
-      <View className="flex-row justify-between items-center px-6 mb-6">
-        <Text className="text-coffee-900 dark:text-coffee-100 text-3xl font-bold">Registro</Text>
-        <TouchableOpacity
-          className="bg-coffee-800 flex-row items-center px-5 py-3 rounded-2xl shadow-md"
-          onPress={() => router.push('/add-roast')}
-        >
-          <IconSymbol name="cup.and.saucer.fill" size={18} color="#fff" />
-          <Text className="text-white font-bold ml-2">Nuevo</Text>
-        </TouchableOpacity>
-      </View>
+    <View className="flex-1 bg-coffee-950 items-center">
+      {/* Background Decor */}
+      <View className="absolute top-[100] right-[-50] w-[300] h-[300] bg-coffee-900 rounded-full blur-[100px] opacity-15" />
+      <View className="absolute bottom-[200] left-[-30] w-[250] h-[250] bg-coffee-800 rounded-full blur-[80px] opacity-10" />
 
-      <FlatList
-        data={roasts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchRoasts} tintColor="#846358" />
-        }
-        ListEmptyComponent={
-          <View className="mt-24 items-center px-10">
-            <View className="bg-coffee-100 dark:bg-zinc-900 p-8 rounded-full mb-6">
-              <IconSymbol name="cup.and.saucer.fill" size={60} color="#eaddd7" />
+      <View className="w-full max-w-5xl flex-1">
+        <View className="pt-20 px-6 pb-6 flex-row justify-between items-center">
+          <Text className="text-white text-3xl font-black tracking-tighter">Registros</Text>
+          <TouchableOpacity
+            className="overflow-hidden rounded-2xl border border-white/10 bg-coffee-800 shadow-xl"
+            onPress={() => router.push('/add-roast')}
+          >
+            <View className="flex-row items-center px-6 py-3">
+              <IconSymbol name="cup.and.saucer.fill" size={18} color="#fff" />
+              <Text className="text-white font-black ml-2 text-sm tracking-tight">Nuevo</Text>
             </View>
-            <Text className="text-coffee-900 dark:text-coffee-100 text-xl font-bold text-center">Sin registros aún</Text>
-            <Text className="text-coffee-500 text-center mt-2 leading-relaxed">
-              Comienza a documentar tus tuestes para perfeccionar tu técnica.
-            </Text>
-          </View>
-        }
-      />
+          </TouchableOpacity>
+        </View>
+
+        <FlashList
+          data={roasts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          estimatedItemSize={140}
+          contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 0 }}
+          numColumns={width > 768 ? 2 : 1}
+          key={width > 768 ? 'web' : 'mobile'}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={fetchRoasts} tintColor="#a18072" />
+          }
+          ListEmptyComponent={
+            <View className="mt-32 items-center px-10">
+              <View className="bg-white/5 p-10 rounded-full mb-8 border border-white/5">
+                <IconSymbol name="cup.and.saucer.fill" size={60} color="#43302b" />
+              </View>
+              <Text className="text-white text-xl font-black text-center tracking-tight">Sin actividad</Text>
+              <Text className="text-coffee-500 text-center mt-3 leading-relaxed font-bold text-xs uppercase tracking-widest">
+                Empieza a documentar tus tuestes para encontrar el perfil perfecto.
+              </Text>
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 }

@@ -20,6 +20,7 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'cup.and.saucer.fill': 'local-cafe',
   'list.bullet': 'format-list-bulleted',
+  'archivebox.fill': 'inventory',
 } as IconMapping;
 
 /**
