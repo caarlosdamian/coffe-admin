@@ -2,6 +2,7 @@ export type RoastProcess = 'lavado' | 'natural' | 'honey';
 
 export interface Roast {
   id: string;
+  beanId?: string; // Reference to a saved bean
   date: string; // ISO String
   origin: string;
   process: RoastProcess;
@@ -34,13 +35,13 @@ export const RoastService = {
     try {
       const roasts = await this.getAllRoasts();
       const existingIndex = roasts.findIndex((r) => r.id === roast.id);
-      
+
       if (existingIndex > -1) {
         roasts[existingIndex] = roast;
       } else {
         roasts.unshift(roast); // Add new to the top
       }
-      
+
       const jsonValue = JSON.stringify(roasts);
       await AsyncStorage.setItem(ROASTS_STORAGE_KEY, jsonValue);
     } catch (e) {

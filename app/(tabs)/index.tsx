@@ -33,6 +33,17 @@ export default function DashboardScreen() {
           </View>
 
           <View className="flex-row flex-wrap justify-between mb-8">
+            <TouchableOpacity
+              className="w-[48%] mb-4 overflow-hidden rounded-[32px] bg-coffee-800 border border-white/10 shadow-lg"
+              onPress={() => router.push('/add-roast')}
+            >
+              <View className="items-center justify-center p-6 py-8">
+                <View className="bg-white/10 p-2 rounded-full mb-3">
+                  <IconSymbol name="cup.and.saucer.fill" size={28} color="#fff" />
+                </View>
+                <Text className="text-white font-black text-sm tracking-tight">Nuevo Tueste</Text>
+              </View>
+            </TouchableOpacity>
             {stats.map((stat, index) => (
               <View key={index} className="w-[48%] mb-4 overflow-hidden rounded-[32px] border border-white/5 bg-white/5 shadow-2xl">
                 <BlurView intensity={40} tint="dark" className="p-6">
@@ -43,17 +54,7 @@ export default function DashboardScreen() {
               </View>
             ))}
 
-            <TouchableOpacity
-              className="w-[48%] mb-4 overflow-hidden rounded-[32px] bg-coffee-800 border border-white/10 shadow-lg"
-              onPress={() => router.push('/add-roast')}
-            >
-              <View className="items-center justify-center p-6 py-8 h-full">
-                <View className="bg-white/10 p-2 rounded-full mb-3">
-                  <IconSymbol name="cup.and.saucer.fill" size={28} color="#fff" />
-                </View>
-                <Text className="text-white font-black text-sm tracking-tight">Nuevo Tueste</Text>
-              </View>
-            </TouchableOpacity>
+
           </View>
 
           {/* Highlight Card */}

@@ -1,9 +1,10 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Bean, BeanService } from '@/services/bean-service';
 import { InventoryItem, InventoryService } from '@/services/inventory-service';
 import { Roast, RoastService } from '@/services/roast-service';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const PROCESS_COLOR: Record<string, string> = {
@@ -34,11 +35,13 @@ export default function DashboardScreen() {
   const router = useRouter();
   const [roasts, setRoasts] = useState<Roast[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [beans, setBeans] = useState<Bean[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       RoastService.getAllRoasts().then(setRoasts);
       InventoryService.getAllItems().then(setInventory);
+      BeanService.getAllBeans().then(setBeans);
     }, [])
   );
 
@@ -75,21 +78,40 @@ export default function DashboardScreen() {
             Buena sesión, Carlos
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => router.push('/add-roast')}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-            backgroundColor: '#6b4c43',
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            borderRadius: 7,
-          }}
-        >
-          <IconSymbol name="cup.and.saucer.fill" size={13} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Nuevo Tueste</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            onPress={() => router.push('/add-bean')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.1)',
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 7,
+            }}
+          >
+            <IconSymbol name="leaf.fill" size={13} color="rgba(255,255,255,0.7)" />
+            <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' }}>Nueva Semilla</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/add-roast')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: '#6b4c43',
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 7,
+            }}
+          >
+            <IconSymbol name="cup.and.saucer.fill" size={13} color="#fff" />
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Nuevo Tueste</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={{ paddingHorizontal: 28, paddingTop: 22 }}>
@@ -97,6 +119,7 @@ export default function DashboardScreen() {
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
           <StatCard label="Tuestes totales" value={String(totalRoasts)} accent="#c4a090" />
           <StatCard label="Merma promedio" value={avgLoss !== '—' ? `${avgLoss}%` : '—'} accent="#f87171" />
+          <StatCard label="Semillas" value={String(beans.length)} accent="#d2bab0" />
           <StatCard label="Último origen" value={lastOrigin} sub={roasts[0] ? new Date(roasts[0].date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }) : undefined} accent="rgba(255,255,255,0.7)" />
           <StatCard label="Stock total" value={totalStock > 0 ? `${(totalStock / 1000).toFixed(1)}kg` : '—'} sub={`${inventory.length} productos`} accent="#34d399" />
         </View>

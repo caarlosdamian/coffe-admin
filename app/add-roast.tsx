@@ -13,14 +13,19 @@ import {
 } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Roast, RoastProcess, RoastService } from '@/services/roast-service';
+import { Bean, BeanService } from '@/services/bean-service';
+import { Roast, RoastService } from '@/services/roast-service';
 
 export default function AddRoastScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
+  const [beans, setBeans] = useState<Bean[]>([]);
+  const [showBeanPicker, setShowBeanPicker] = useState(false);
+
   const [form, setForm] = useState<Omit<Roast, 'id' | 'lossPercentage'>>({
     date: new Date().toISOString(),
+    beanId: '',
     origin: '',
     process: 'lavado',
     variety: '',
@@ -35,6 +40,8 @@ export default function AddRoastScreen() {
   const [loss, setLoss] = useState(0);
 
   useEffect(() => {
+    BeanService.getAllBeans().then(setBeans);
+
     if (id) {
       RoastService.getAllRoasts().then(roasts => {
         const roast = roasts.find(r => r.id === id);
@@ -125,35 +132,74 @@ export default function AddRoastScreen() {
             )}
           </View>
 
-          <Text className="text-coffee-300 text-lg font-black mb-6 tracking-tight uppercase text-[14px]">Detalles del Grano</Text>
+          <Text className="text-coffee-300 text-lg font-black mb-6 tracking-tight uppercase text-[14px]">Selección de Grano</Text>
 
-          {renderInput('Origen *', form.origin, (val) => setForm({ ...form, origin: val }), 'Ej. Colombia, Huila')}
+          <TouchableOpacity
+            onPress={() => setShowBeanPicker(!showBeanPicker)}
+            className="mb-8 overflow-hidden rounded-[24px] border border-white/10 bg-white/5"
+          >
+            <BlurView intensity={20} tint="dark" className="p-6 flex-row items-center justify-between">
+              <View className="flex-1">
+                {form.origin ? (
+                  <>
+                    <Text className="text-white font-black text-lg tracking-tight">{form.origin}</Text>
+                    <Text className="text-coffee-500 text-[10px] font-bold uppercase tracking-widest mt-1">
+                      {form.variety} • {form.process} • {form.altitude}
+                    </Text>
+                  </>
+                ) : (
+                  <Text className="text-coffee-600 font-bold italic">Selecciona una semilla del catálogo...</Text>
+                )}
+              </View>
+              <View className="bg-coffee-800 p-2 rounded-full">
+                <IconSymbol name={showBeanPicker ? "chevron.up" : "chevron.down"} size={16} color="#fff" />
+              </View>
+            </BlurView>
+          </TouchableOpacity>
 
-          <View className="flex-row">
-            <View className="flex-1 mr-3">
-              {renderInput('Variedad', form.variety, (val) => setForm({ ...form, variety: val }), 'Bourbon')}
-            </View>
-            <View className="flex-1">
-              {renderInput('Altitud', form.altitude, (val) => setForm({ ...form, altitude: val }), '1700m')}
-            </View>
-          </View>
-
-          <View className="mb-10">
-            <Text className="text-coffee-500 text-[10px] font-black mb-3 ml-1 uppercase tracking-[2px]">Proceso</Text>
-            <View className="flex-row bg-white/5 p-1.5 rounded-2xl border border-white/5">
-              {(['lavado', 'natural', 'honey'] as RoastProcess[]).map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  className={`flex-1 py-3 rounded-xl items-center ${form.process === p ? 'bg-coffee-800 border border-white/10' : ''}`}
-                  onPress={() => setForm({ ...form, process: p })}
-                >
-                  <Text className={`text-[11px] font-black uppercase tracking-widest ${form.process === p ? 'text-white' : 'text-coffee-600'}`}>
-                    {p}
-                  </Text>
+          {showBeanPicker && (
+            <View className="mb-10">
+              <View className="flex-row justify-between mb-4 px-2">
+                <Text className="text-coffee-500 text-[10px] font-black uppercase tracking-[2px]">Tus Semillas</Text>
+                <TouchableOpacity onPress={() => router.push('/add-bean')}>
+                  <Text className="text-coffee-400 text-[10px] font-black uppercase tracking-[2px]">+ Nueva</Text>
                 </TouchableOpacity>
-              ))}
+              </View>
+              {beans.length === 0 ? (
+                <View className="p-6 items-center bg-white/5 rounded-3xl border border-white/5">
+                  <Text className="text-coffee-600 text-[11px] font-bold uppercase tracking-widest">No hay semillas guardadas</Text>
+                </View>
+              ) : (
+                <View className="bg-white/5 rounded-3xl border border-white/5 overflow-hidden">
+                  {beans.map((bean, idx) => (
+                    <TouchableOpacity
+                      key={bean.id}
+                      onPress={() => {
+                        setForm({
+                          ...form,
+                          beanId: bean.id,
+                          origin: bean.origin,
+                          variety: bean.variety,
+                          altitude: bean.altitude,
+                          process: bean.process
+                        });
+                        setShowBeanPicker(false);
+                      }}
+                      className={`p-5 flex-row items-center border-b border-white/5 ${form.beanId === bean.id ? 'bg-coffee-800/30' : ''}`}
+                    >
+                      <View className="flex-1">
+                        <Text className="text-white font-bold text-sm">{bean.name}</Text>
+                        <Text className="text-coffee-500 text-[9px] uppercase font-black">{bean.origin} • {bean.process}</Text>
+                      </View>
+                      {form.beanId === bean.id && (
+                        <IconSymbol name="house.fill" size={14} color="#a18072" />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
-          </View>
+          )}
 
           <Text className="text-coffee-300 text-lg font-black mb-6 tracking-tight uppercase text-[14px]">Control de Peso</Text>
 

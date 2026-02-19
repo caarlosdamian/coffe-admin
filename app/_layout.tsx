@@ -20,6 +20,7 @@ export default function RootLayout() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen name="add-roast" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="add-inventory" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="add-bean" options={{ presentation: 'modal', headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

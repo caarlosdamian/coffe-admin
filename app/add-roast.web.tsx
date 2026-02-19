@@ -1,6 +1,7 @@
 import { SideNavigation } from '@/components/side-navigation';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Roast, RoastProcess, RoastService } from '@/services/roast-service';
+import { Bean, BeanService } from '@/services/bean-service';
+import { Roast, RoastService } from '@/services/roast-service';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -56,8 +57,12 @@ export default function AddRoastScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
+  const [beans, setBeans] = useState<Bean[]>([]);
+  const [showBeanPicker, setShowBeanPicker] = useState(false);
+
   const [form, setForm] = useState<Omit<Roast, 'id' | 'lossPercentage'>>({
     date: new Date().toISOString(),
+    beanId: '',
     origin: '',
     process: 'lavado',
     variety: '',
@@ -72,6 +77,8 @@ export default function AddRoastScreen() {
   const [loss, setLoss] = useState(0);
 
   useEffect(() => {
+    BeanService.getAllBeans().then(setBeans);
+
     if (id) {
       RoastService.getAllRoasts().then(roasts => {
         const roast = roasts.find(r => r.id === id);
@@ -94,7 +101,7 @@ export default function AddRoastScreen() {
 
   const handleSubmit = async () => {
     if (!form.origin || !form.greenWeight || !form.roastedWeight) {
-      Alert.alert('Error', 'Completa los campos obligatorios (Origen, Pesos)');
+      Alert.alert('Error', 'Completa los campos obligatorios (Grano, Pesos)');
       return;
     }
     await RoastService.saveRoast({
@@ -163,7 +170,7 @@ export default function AddRoastScreen() {
           <View style={{ flexDirection: 'row', gap: 24, alignItems: 'flex-start' }}>
             {/* Left: Form */}
             <View style={{ flex: 2 }}>
-              {/* Section: Grano */}
+              {/* Section: Selección de Grano */}
               <View style={{
                 backgroundColor: 'rgba(255,255,255,0.02)',
                 borderWidth: 1,
@@ -173,48 +180,101 @@ export default function AddRoastScreen() {
                 marginBottom: 14,
               }}>
                 <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 14 }}>
-                  Detalles del Grano
+                  Selección de Grano
                 </Text>
 
-                <View style={{ marginBottom: 12 }}>
-                  <Label text="Origen *" />
-                  <Input value={form.origin} onChange={(v) => setForm({ ...form, origin: v })} placeholder="Colombia, Huila" />
-                </View>
-
-                <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
-                  <View style={{ flex: 1 }}>
-                    <Label text="Variedad" />
-                    <Input value={form.variety} onChange={(v) => setForm({ ...form, variety: v })} placeholder="Bourbon" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Label text="Altitud" />
-                    <Input value={form.altitude} onChange={(v) => setForm({ ...form, altitude: v })} placeholder="1700m" />
-                  </View>
-                </View>
-
-                <View>
-                  <Label text="Proceso" />
-                  <View style={{ flexDirection: 'row', gap: 6 }}>
-                    {(['lavado', 'natural', 'honey'] as RoastProcess[]).map((p) => (
-                      <TouchableOpacity
-                        key={p}
-                        onPress={() => setForm({ ...form, process: p })}
-                        style={{
-                          paddingHorizontal: 12,
-                          paddingVertical: 6,
-                          borderRadius: 5,
-                          borderWidth: 1,
-                          borderColor: form.process === p ? '#6b4c43' : 'rgba(255,255,255,0.08)',
-                          backgroundColor: form.process === p ? 'rgba(107,76,67,0.2)' : 'transparent',
-                        }}
-                      >
-                        <Text style={{ color: form.process === p ? '#c4a090' : 'rgba(255,255,255,0.3)', fontSize: 12, fontWeight: '600', textTransform: 'capitalize' }}>
-                          {p}
+                <TouchableOpacity
+                  onPress={() => setShowBeanPicker(!showBeanPicker)}
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.04)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderRadius: 7,
+                    padding: 14,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: showBeanPicker ? 16 : 0
+                  }}
+                >
+                  <View>
+                    {form.origin ? (
+                      <>
+                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: '700' }}>{form.origin}</Text>
+                        <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2 }}>
+                          {form.variety} • {form.process} • {form.altitude}
                         </Text>
-                      </TouchableOpacity>
-                    ))}
+                      </>
+                    ) : (
+                      <Text style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13, fontStyle: 'italic' }}>
+                        Selecciona una semilla del catálogo...
+                      </Text>
+                    )}
                   </View>
-                </View>
+                  <IconSymbol name={showBeanPicker ? "chevron.up" : "chevron.down"} size={14} color="rgba(255,255,255,0.3)" />
+                </TouchableOpacity>
+
+                {showBeanPicker && (
+                  <View style={{ marginTop: 16 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <Text style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>Tus Semillas</Text>
+                      <TouchableOpacity onPress={() => router.push('/add-bean')}>
+                        <Text style={{ color: '#c4a090', fontSize: 10, fontWeight: '700', letterSpacing: 1 }}>+ NUEVA</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {beans.length === 0 ? (
+                      <View style={{ padding: 20, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 7 }}>
+                        <Text style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11 }}>No hay semillas guardadas</Text>
+                      </View>
+                    ) : (
+                      <View style={{
+                        backgroundColor: 'rgba(255,255,255,0.02)',
+                        borderRadius: 7,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255,255,255,0.06)',
+                        maxHeight: 200,
+                        overflow: 'hidden'
+                      }}>
+                        <ScrollView nestedScrollEnabled>
+                          {beans.map((bean) => (
+                            <TouchableOpacity
+                              key={bean.id}
+                              onPress={() => {
+                                setForm({
+                                  ...form,
+                                  beanId: bean.id,
+                                  origin: bean.origin,
+                                  variety: bean.variety,
+                                  altitude: bean.altitude,
+                                  process: bean.process
+                                });
+                                setShowBeanPicker(false);
+                              }}
+                              style={{
+                                padding: 12,
+                                borderBottomWidth: 1,
+                                borderBottomColor: 'rgba(255,255,255,0.04)',
+                                backgroundColor: form.beanId === bean.id ? 'rgba(107,76,67,0.15)' : 'transparent',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <View>
+                                <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>{bean.name}</Text>
+                                <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>{bean.origin} • {bean.process}</Text>
+                              </View>
+                              {form.beanId === bean.id && (
+                                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#c4a090' }} />
+                              )}
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
 
               {/* Section: Pesos */}

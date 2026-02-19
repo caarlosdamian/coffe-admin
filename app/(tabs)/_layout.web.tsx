@@ -15,6 +15,7 @@ export default function TabLayout() {
             tabBarStyle: { display: 'none' },
           }}>
           <Tabs.Screen name="index" options={{ title: 'Panel' }} />
+          <Tabs.Screen name="beans" options={{ title: 'Granos' }} />
           <Tabs.Screen name="roasts" options={{ title: 'Registros' }} />
           <Tabs.Screen name="inventory" options={{ title: 'Inventario' }} />
           <Tabs.Screen name="explore" options={{ href: null }} />

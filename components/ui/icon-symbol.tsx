@@ -21,6 +21,8 @@ const MAPPING = {
   'cup.and.saucer.fill': 'local-cafe',
   'list.bullet': 'format-list-bulleted',
   'archivebox.fill': 'inventory',
+  'leaf.circle.fill': 'coffee',
+
 } as IconMapping;
 
 /**

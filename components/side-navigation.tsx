@@ -4,6 +4,7 @@ import { IconSymbol } from './ui/icon-symbol';
 
 const NAV_ITEMS = [
   { name: 'Panel', path: '/', icon: 'house.fill' as const },
+  { name: 'Granos', path: '/beans', icon: 'leaf.circle.fill' as const },
   { name: 'Registros', path: '/roasts', icon: 'list.bullet' as const },
   { name: 'Inventario', path: '/inventory', icon: 'archivebox.fill' as const },
 ];
@@ -123,6 +124,23 @@ export function SideNavigation() {
         }}>
           Acciones
         </Text>
+
+        <TouchableOpacity
+          onPress={() => router.push('/add-bean' as any)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            marginBottom: 2,
+            borderRadius: 7,
+          }}
+        >
+          <IconSymbol name="leaf.fill" size={14} color="rgba(255,255,255,0.25)" />
+          <Text style={{ marginLeft: 9, fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.3)' }}>
+            Nueva Semilla
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push('/add-roast' as any)}
